@@ -59,11 +59,11 @@ def rot2dz(theta: num|ndarrd, pointrot: ndarrd|list[num]|tuple[num, num],
     pointrot : tuple| list | np.ndarray -- vector(s) that has to be rotated
     pointabt : tuple | list | np.ndarray -- point of rotation
     """
-    # Converting into numpy arrays
+    # converting into numpy arrays
     theta = np.asarray_chkfinite(theta); pointrot = np.asarray_chkfinite(pointrot)
     pointabt = np.asarray_chkfinite(pointabt)
 
-    # Defining new vectors w.r.t pointabt
+    # defining new vectors w.r.t pointabt
     if pointrot.ndim == 1: # a 1D-array
         vecnew = np.hstack((pointrot - pointabt,0)) # A 1D-array with z-axis
     elif pointrot.ndim == 2: # a 2D-array
@@ -136,28 +136,28 @@ def recVec(a1: ndarrd|list[num]|tuple[num, num],
     # Converting a1 and a2 into numpy arrays
     a1 = np.asarray_chkfinite(a1); a2 = np.asarray_chkfinite(a2)
 
-    # Now creating a matrix [a1,a2] of the primitive lattice vectors
+    # creating a matrix [a1,a2] of the primitive lattice vectors
     realMat = np.column_stack((a1,a2))
     
-    # Finding the reciprocal space lattice vectors
+    # finding the reciprocal space lattice vectors
     # Note: la.inv raises LinAlgErr if realMat is singular. 
     reciMat = np.transpose((2*math.pi)*la.inv(realMat))
     
     # The reciprocal lattice vectors
     b1 = reciMat[:,0].copy(); b2 = reciMat[:,1].copy()
 
-    # Test-1 (Laue Conditions) for reciprocal lattice vectors
+    # test-1 (Laue Conditions) for reciprocal lattice vectors
     chkLaue1 = np.logical_and(np.dot(a1,b2) < TOL, np.dot(a2,b1) < TOL)
     chkLaue2 = np.logical_and(abs(np.dot(a1,b1) - 2*math.pi) < TOL,
                               abs(np.dot(a2,b2) - 2*math.pi) < TOL)
     test.assertTrue(chkLaue1 or chkLaue2,
                     msg="The reciprocal lattice vectors are violating Laue condiitons!")
 
-    # Test-2 (Product of area should be (2*pi)**2
+    # test-2 (Product of area should be (2*pi)**2
     Areal = abs(la.det(realMat)); Areci = abs(la.det(reciMat))
     test.assertTrue(abs(Areal*Areci - (2*np.pi)**2) < TOL, msg="The area test is failed!")
 
-    # Test-3 (Equal Norm test)
+    # test-3 (Equal Norm test)
     isbrnormsame = abs(la.norm(b1) - la.norm(b2)) < TOL
     test.assertTrue(isbrnormsame, msg="The vectors b1 and b2 do not have equal norm!")
 
